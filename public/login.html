@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous">
+    </script>
+    <title>Login</title>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="text-center mt-5">
+            <h2>Sign in to your account</h2>
+        </div>
+        <div class="row mt-5">
+            <div class="col-md-4 mx-auto">
+                <div class="card p-4">
+                    <div class="form">
+                        <form action="/" method="post" name="login">
+                            <div class="form-group mb-3">
+                                <input type="text" name="username" class="form-control" id="username"
+                                    placeholder="Username">
+                            </div>
+                            <div class="form-group mb-3">
+                                <input type="text" name="password" class="form-control" id="password"
+                                    placeholder="Password">
+                            </div>
+                            <div class="mb-3">
+                                <select name="room" id="room" class="form-select">
+                                    <option selected>Chatroom 1</option>
+                                    <option value="Classroom 1">Chatroom 2</option>                                    
+                                    <option value="Groupwork 1">Groupwork 1</option>
+                                    <option value="Groupwork 2">Groupwork 2</option>
+                                    <option value="Classroom 1">Classroom 1</option>
+                                    <option value="Classroom 2">Classroom 2</option>
+                                    <option value="Meeting 1">Meeting 1</option>
+                                    <option value="Meeting 2">Meeting 2</option>
+                                  </select>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Sign in</button>
+                            </div>
+                            <div class="text-center mt-2">
+                                <label for="signUp">Dont have an account? <a style="text-decoration: underline;" href="/signUp">Sign Up</a></label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

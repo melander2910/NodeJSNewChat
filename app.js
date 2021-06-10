@@ -21,6 +21,45 @@ app.use(express.urlencoded({
     extended: true
 }));
 
+// import express-session
+const session = require("express-session")
+
+// in order for the app to use sessions
+app.use(session({
+    secret: "secret session cookie is signed with this secret to prevent tampering", // Data tampering is the act of deliberately modifying (destroying, manipulating, or editing) data through unauthorized channels
+    resave: false,
+    saveUninitialized: false
+}))
+
+// import mysql
+const mysql = require("mysql");
+
+// connection information for a specific database
+const connection = mysql.createConnection({
+    host: "kealoungedb.censevy2cldg.us-east-1.rds.amazonaws.com",
+    port: "3306",
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: "KeaLoungeDB"
+});
+
+// connecting to the database
+connection.connect((error) => {
+    if(error){
+        console.log("Could not connect to the database: " + error);
+    } else {
+        console.log("Succefully connected to the database");
+    }
+})
+
+// import functions and constants from user.js
+const { 
+    login 
+} = require("./backend/user");
+
+// using login from user.js in order to create a user and check credentials upon login attempt
+login(app, connection)
+
 // import file-system
 const fs = require("fs");
 
@@ -31,37 +70,57 @@ const fs = require("fs");
 
 // A server that integrates with (or mounts on) the Node.JS HTTP Server socket.io
 const http = require('http');
+
 const server = http.createServer(app);
 
-// A client library that loads on the browser side socket.io-client
+// and a client library that loads on the browser side socket.io-client
 const io = require("socket.io")(server);
 
-// Log when a user connects to the server 
+// creating a variable in order to save user.session data
+let user = null;
+
+// run when client connects
 io.on("connection", (socket) => {
 
-    console.log("A user connected to the server");
+    // when a user joins the chat give that user a welcome message
+    socket.emit("message", "Welcome to the chat, have fun!")
     
-    // log when a user disconnects from the server
+    // when a user joins the chat give everyone a message
+    socket.broadcast.emit("message", `${"user.username"} has joined the chat` )
+
+    // when a user leaves the chat give everyone a message
     socket.on("disconnect", () => {
-        console.log("A user disconnected from the server");
+        io.emit("message", "A user disconnected from the chat")
     });
 
+    // when a user sends a chat message, emit chat message to all users
     socket.on("chatMessage", (chatMessage) => {
-        io.emit("chatMessage", chatMessage)
-        console.log(chatMessage);
+        io.emit("message", chatMessage);
     });
 });
 
 
-
-
-// const frontpage = __dirname + "/public/index.html";
-// 
-const frontpage = fs.readFileSync(__dirname + "/public/index.html", "utf-8");
+// not sure why this is smart? SSR? questionmark
+const chatpage = fs.readFileSync(__dirname + "/public/chat.html", "utf-8");
+const loginpage = fs.readFileSync(__dirname + "/public/login.html", "utf-8");
+const signuppage = fs.readFileSync(__dirname + "/public/signup.html", "utf-8");
 
 // Serving html pages
+app.get("/chat", (req, res) => {
+    if(req.session.isAuth){   
+        user = req.session.user;        
+        res.send(chatpage)
+    } else {
+        res.send(loginpage)
+    }
+})
+
 app.get("/", (req, res) => {
-    res.sendFile(frontpage)
+    res.send(loginpage)
+})
+
+app.get("/signup", (req, res) => {
+    res.send(signuppage)
 })
 
 // setting port to .env port if it exist, else 3000
