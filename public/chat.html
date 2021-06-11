@@ -20,15 +20,30 @@
     <div class="container text-center">
         <div class="row">
             <div class="col-4 mt-5">
-                <h3>Rooms and friends</h3>
+                <h3>Room and users</h3>
                 <div style="height: 800px;" class="card mt-3">
-                    <ul id="rooms">
+                    <div class="mb-3">
+                        <select name="roomlist" id="roomlist" class="form-select">
+                            <option selected>Chatroom 1</option>
+                            <option value="Classroom 1">Chatroom 2</option>                                    
+                            <option value="Groupwork 1">Groupwork 1</option>
+                            <option value="Groupwork 2">Groupwork 2</option>
+                            <option value="Classroom 1">Classroom 1</option>
+                            <option value="Classroom 2">Classroom 2</option>
+                            <option value="Meeting 1">Meeting 1</option>
+                            <option value="Meeting 2">Meeting 2</option>
+                          </select>
+                    </div>
+                    <ul class="card" id="roomusers">
+                        <div>
+                            
+                        </div>
                         <!-- here i append messages -->
                     </ul>
                 </div>
             </div>
             <div class="col-6 mt-5">
-                <h3>MyChat</h3>
+                <h3 id="roomname"></h3>
                 <div id="chatbox" class="card mt-3">
                     <ul id="messages">
                         <!-- here i append messages -->

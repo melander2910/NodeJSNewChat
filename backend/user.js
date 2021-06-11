@@ -30,8 +30,25 @@ const login = (app, connection) => {
     }); 
 }
 
+// creating a list in which i can add users
+let userlist = [];
 
 
+// creating a function to add users to the list
+function userJoin(id, username, room) {
+    const user = { id, username, room };
+    userlist.push(user);
+    return user;
+}
+
+// creating a function to get roomusers of a specific room
+function getRoomUsers(room) {
+    return userlist.filter(user => user.room === room);
+}
+
+// exporting functions and constants
 module.exports = {
     login,
+    userJoin,
+    getRoomUsers
 }

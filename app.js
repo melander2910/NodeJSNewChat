@@ -52,9 +52,14 @@ connection.connect((error) => {
     }
 })
 
+// import message format function
+const formatter = require("./public/js/messageFormat")
+
 // import functions and constants from user.js
 const { 
-    login 
+    login,
+    userJoin,
+    getRoomUsers 
 } = require("./backend/user");
 
 // using login from user.js in order to create a user and check credentials upon login attempt
@@ -82,21 +87,40 @@ let user = null;
 // run when client connects
 io.on("connection", (socket) => {
 
-    // when a user joins the chat give that user a welcome message
-    socket.emit("message", "Welcome to the chat, have fun!")
-    
-    // when a user joins the chat give everyone a message
-    socket.broadcast.emit("message", `${"user.username"} has joined the chat` )
+    socket.on("joinRoom", ({
+        username = user.alias,
+        room = user.room
+    }) => { 
 
-    // when a user leaves the chat give everyone a message
-    socket.on("disconnect", () => {
-        io.emit("message", "A user disconnected from the chat")
+        // adding user to a list
+        const user = userJoin(socket.id, username, room)
+
+        // join room
+        socket.join(room)
+
+        // emitting room users of joined room
+        io.to(user.room).emit("roomUsers", {
+            room: user.room,
+            users: getRoomUsers(user.room)
+        });
+
+        // when a user joins the chat give that user a welcome message
+        socket.emit("message", formatter("Server", `Welcome to the chat, ${username}`))
+
+        // when a user joins the chat give everyone a message
+        socket.broadcast.to(room).emit("message", formatter("Server", `${username} has joined ${room}`))
+
+        // when a user leaves the chat give everyone a message
+        socket.on("disconnect", () => {
+            io.to(room).emit("message", formatter("Server", `${username} has disconnected from the chat`))
+        });
+
+        // when a user sends a chat message, emit chat message to all users
+        socket.on("chatMessage", (chatMessage) => {
+            io.to(room).emit("message", formatter(username, chatMessage));
+        });
     });
 
-    // when a user sends a chat message, emit chat message to all users
-    socket.on("chatMessage", (chatMessage) => {
-        io.emit("message", chatMessage);
-    });
 });
 
 
