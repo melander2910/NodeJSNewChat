@@ -1,9 +1,12 @@
 #chatbox {
     height: 737px; 
     margin: 25px;
+    overflow-y: scroll;
+    width: 590px;
 }
 
 #form {
     height: 150px; 
     margin: 25px;
 }
+

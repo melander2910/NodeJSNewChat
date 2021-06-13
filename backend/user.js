@@ -41,6 +41,14 @@ function userJoin(id, username, room) {
     return user;
 }
 
+// User leaves chat
+function userLeave(id) {
+    const index = userlist.findIndex(user => user.id == id);
+    if(index != -1) {
+        return userlist.splice(index, 1)[0];
+    }
+}
+
 // creating a function to get roomusers of a specific room
 function getRoomUsers(room) {
     return userlist.filter(user => user.room === room);
@@ -50,5 +58,6 @@ function getRoomUsers(room) {
 module.exports = {
     login,
     userJoin,
-    getRoomUsers
+    getRoomUsers,
+    userLeave
 }

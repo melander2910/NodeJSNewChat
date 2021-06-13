@@ -24,22 +24,24 @@ form.addEventListener("submit", (event) => {
 
         // clearing input
         input.value = "";
+        
     }
 });
 
 // Append messages on client side
 socket.on("message", (message) => {
     let div = document.createElement("div");
-    div.classList.add("card")
     div.innerHTML =
-        `<div">
-            ${message.username} today at: ${message.time}
+        `<div class="card shadow bg-white rounded mt-4" style="margin: 1px;">
+            <div>
+            ${message.username} today at: ${message.time}        
+            </div>
             <div id="text">
                 ${message.text}
             </div>
         </div>`
     allMessages.appendChild(div);
-    allMessages.scrollTop = allMessages.scrollHeight;
+    document.getElementById("chatbox").scrollTop = document.getElementById("chatbox").scrollHeight
 });
 
 // catch emit from app.js and show information on chat.html
@@ -57,5 +59,17 @@ function outputRoomName(room) {
 // Add room users to DOM
 function outputUsers(users) {
     document.getElementById("roomusers").innerHTML =
-    `${users.map(user => `<li>${user.username}</li>`).join("")}`;
+    `${users.map(user => `
+    <div class="card m-2 center pd-5" style="height: 75px; border: none; box-shadow: 0 0 5px; width: 75px; border-radius: 45px; line-height: 69px;">
+        <span> ${user.username} </span>
+    </div>
+    `).join("")}`;
 }
+
+// prompt leave room btn
+document.getElementById('leave-room').addEventListener('click', () => {
+    const leaveRoom = confirm('Are you sure you want to leave the chatroom?');
+    if (leaveRoom) {
+        window.location = "/logout";
+    }
+});

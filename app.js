@@ -59,7 +59,8 @@ const formatter = require("./public/js/messageFormat")
 const { 
     login,
     userJoin,
-    getRoomUsers 
+    getRoomUsers, 
+    userLeave
 } = require("./backend/user");
 
 // using login from user.js in order to create a user and check credentials upon login attempt
@@ -105,14 +106,25 @@ io.on("connection", (socket) => {
         });
 
         // when a user joins the chat give that user a welcome message
-        socket.emit("message", formatter("Server", `Welcome to the chat, ${username}`))
+        socket.emit("message", formatter("Chatbot", `Welcome to the chat, ${username}`))
 
         // when a user joins the chat give everyone a message
-        socket.broadcast.to(room).emit("message", formatter("Server", `${username} has joined ${room}`))
+        socket.broadcast.to(room).emit("message", formatter("Chatbot", `${username} has joined ${room}`))
 
         // when a user leaves the chat give everyone a message
         socket.on("disconnect", () => {
-            io.to(room).emit("message", formatter("Server", `${username} has disconnected from the chat`))
+            const user = userLeave(socket.id)
+
+            if(user){
+                io.to(room).emit("message", formatter("Chatbot", `${username} has disconnected from the chat`))
+                
+
+                // update userlist
+                io.to(user.room).emit("roomUsers", {
+                room: user.room,
+                users: getRoomUsers(user.room)
+            });
+            }
         });
 
         // when a user sends a chat message, emit chat message to all users
@@ -140,11 +152,21 @@ app.get("/chat", (req, res) => {
 })
 
 app.get("/", (req, res) => {
-    res.send(loginpage)
+    if(req.session.isAuth){   
+        user = req.session.user;        
+        res.send(chatpage)
+    } else {
+        res.send(loginpage)
+    }
 })
 
 app.get("/signup", (req, res) => {
     res.send(signuppage)
+})
+
+app.get("/logout", (req, res) => {
+    req.session.isAuth = false
+    res.send(loginpage)
 })
 
 // setting port to .env port if it exist, else 3000
