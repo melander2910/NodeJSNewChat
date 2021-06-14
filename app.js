@@ -34,7 +34,7 @@ app.use(session({
 // import mysql
 const mysql = require("mysql");
 
-// connection information for a specific database
+// connection information for a specific database (can do an if node_env = development or production, use different databases)
 const connection = mysql.createConnection({
     host: "kealoungedb.censevy2cldg.us-east-1.rds.amazonaws.com",
     port: "3306",

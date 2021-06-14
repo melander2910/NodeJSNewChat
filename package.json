@@ -17,9 +17,10 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "development": "nodemon app.js"
+    "development": "node app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC"
 }
+
