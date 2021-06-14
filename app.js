@@ -209,7 +209,7 @@ app.get("/logout", (req, res) => {
 })
 
 // setting port to .env port if it exist, else 3000
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 80;
 
 // listen on a port in order for the app to run
 server.listen(PORT, (error) => {
