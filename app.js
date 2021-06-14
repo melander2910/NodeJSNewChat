@@ -45,7 +45,7 @@ const connection = mysql.createConnection({
 
 // connecting to the database
 connection.connect((error) => {
-    if(error){
+    if (error) {
         console.log("Could not connect to the database: " + error);
     } else {
         console.log("Succefully connected to the database");
@@ -53,13 +53,13 @@ connection.connect((error) => {
 })
 
 // import message format function
-const formatter = require("./public/js/messageFormat")
+const formatter = require("./backend/messageFormat")
 
 // import functions and constants from user.js
-const { 
+const {
     login,
     userJoin,
-    getRoomUsers, 
+    getRoomUsers,
     userLeave
 } = require("./backend/user");
 
@@ -91,7 +91,7 @@ io.on("connection", (socket) => {
     socket.on("joinRoom", ({
         username = user.alias,
         room = user.room
-    }) => { 
+    }) => {
 
         // adding user to a list
         const user = userJoin(socket.id, username, room)
@@ -106,7 +106,7 @@ io.on("connection", (socket) => {
         });
 
         // when a user joins the chat give that user a welcome message
-        socket.emit("message", formatter("Chatbot", `Welcome to the chat, ${username}`))
+        socket.emit("message", formatter("Chatbot", `Welcome to ${room}, ${username}`))
 
         // when a user joins the chat give everyone a message
         socket.broadcast.to(room).emit("message", formatter("Chatbot", `${username} has joined ${room}`))
@@ -115,36 +115,75 @@ io.on("connection", (socket) => {
         socket.on("disconnect", () => {
             const user = userLeave(socket.id)
 
-            if(user){
+            if (user) {
                 io.to(room).emit("message", formatter("Chatbot", `${username} has disconnected from the chat`))
-                
 
                 // update userlist
                 io.to(user.room).emit("roomUsers", {
+                    room: user.room,
+                    users: getRoomUsers(user.room)
+                });
+            }
+        });
+
+        // Change room
+        socket.on("roomChange", (value) => {
+
+            // leave the room
+            socket.leave(room)
+
+            // tell the room the user left, that he/she left it
+            let user = userLeave(socket.id)
+            if (user) {
+                io.to(room).emit("message", formatter("Chatbot", `${username} has disconnected from the chat`))
+
+                // update userlist in the room the user left
+                io.to(user.room).emit("roomUsers", {
+                    room: user.room,
+                    users: getRoomUsers(user.room)
+                });
+            }
+
+            // set room to be the value of the selecter
+            room = value
+
+            // adding user to a new userlist
+            user = userJoin(socket.id, username, room)
+
+            // join the new room
+            socket.join(room)
+
+            // give welcome message to joined user
+            socket.emit("message", formatter("Chatbot", `Welcome to ${room}, ${username}`))
+
+            // emitting room users of the new joined room
+            io.to(user.room).emit("roomUsers", {
                 room: user.room,
                 users: getRoomUsers(user.room)
             });
-            }
-        });
+
+            // give everyone a message about the new user entering the chat
+            socket.broadcast.to(room).emit("message", formatter("Chatbot", `${username} has joined ${room}`))
+        })
 
         // when a user sends a chat message, emit chat message to all users
         socket.on("chatMessage", (chatMessage) => {
             io.to(room).emit("message", formatter(username, chatMessage));
         });
-    });
 
+    });
 });
 
 
-// not sure why this is smart? SSR? questionmark
+// 
 const chatpage = fs.readFileSync(__dirname + "/public/chat.html", "utf-8");
 const loginpage = fs.readFileSync(__dirname + "/public/login.html", "utf-8");
 const signuppage = fs.readFileSync(__dirname + "/public/signup.html", "utf-8");
 
 // Serving html pages
 app.get("/chat", (req, res) => {
-    if(req.session.isAuth){   
-        user = req.session.user;        
+    if (req.session.isAuth) {
+        user = req.session.user;
         res.send(chatpage)
     } else {
         res.send(loginpage)
@@ -152,8 +191,8 @@ app.get("/chat", (req, res) => {
 })
 
 app.get("/", (req, res) => {
-    if(req.session.isAuth){   
-        user = req.session.user;        
+    if (req.session.isAuth) {
+        user = req.session.user;
         res.send(chatpage)
     } else {
         res.send(loginpage)
@@ -174,7 +213,7 @@ const PORT = process.env.PORT || 3000;
 
 // listen on a port in order for the app to run
 server.listen(PORT, (error) => {
-    if(error){
+    if (error) {
         console.log("Something bad happened: " + error);
     } else {
         console.log("Server is running on port", PORT);

@@ -2,9 +2,12 @@
 
 const socket = io();
 
+
 const form = document.getElementById("form");
 const input = document.getElementById("input");
 const allMessages = document.getElementById("messages");
+const roomSelecter = document.getElementById("roomlist")
+
 
 // emitting join room when a user navigates to /chat - can only happend upon login
 socket.emit("joinRoom", () => { 
@@ -26,6 +29,13 @@ form.addEventListener("submit", (event) => {
         input.value = "";
         
     }
+});
+
+// change room and clear messages
+roomSelecter.addEventListener("change", (event) => {
+    let value = roomSelecter.value;
+    socket.emit("roomChange", value);
+    allMessages.innerHTML = "";
 });
 
 // Append messages on client side
@@ -61,7 +71,7 @@ function outputUsers(users) {
     document.getElementById("roomusers").innerHTML =
     `${users.map(user => `
     <div class="card m-2 center pd-5" style="height: 75px; border: none; box-shadow: 0 0 5px; width: 75px; border-radius: 45px; line-height: 69px;">
-        <span> ${user.username} </span>
+        <span style="font-size: small;"> ${user.username} </span>
     </div>
     `).join("")}`;
 }
