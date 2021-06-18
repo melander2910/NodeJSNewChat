@@ -2,15 +2,14 @@
 
 const socket = io();
 
-
 const form = document.getElementById("form");
 const input = document.getElementById("input");
 const allMessages = document.getElementById("messages");
-const roomSelecter = document.getElementById("roomlist")
-
+const roomSelecter = document.getElementById("roomlist");
+// const roomSelecter = $("#roomlist");
 
 // emitting join room when a user navigates to /chat - can only happend upon login
-socket.emit("joinRoom", () => { 
+socket.emit("joinRoom", () => {
 
 });
 
@@ -27,7 +26,7 @@ form.addEventListener("submit", (event) => {
 
         // clearing input
         input.value = "";
-        
+
     }
 });
 
@@ -51,11 +50,14 @@ socket.on("message", (message) => {
             </div>
         </div>`
     allMessages.appendChild(div);
-    document.getElementById("chatbox").scrollTop = document.getElementById("chatbox").scrollHeight
+    document.getElementById("chatbox").scrollTop = document.getElementById("chatbox").scrollHeight;
 });
 
 // catch emit from app.js and show information on chat.html
-socket.on("roomUsers", ({room, users}) => {
+socket.on("roomUsers", ({
+    room,
+    users
+}) => {
     outputRoomName(room);
     outputUsers(users);
 });
@@ -69,7 +71,7 @@ function outputRoomName(room) {
 // Add room users to DOM
 function outputUsers(users) {
     document.getElementById("roomusers").innerHTML =
-    `${users.map(user => `
+        `${users.map(user => `
     <div class="card m-2 center pd-5" style="height: 75px; border: none; box-shadow: 0 0 5px; width: 75px; border-radius: 45px; line-height: 69px;">
         <span style="font-size: small;"> ${user.username} </span>
     </div>
@@ -83,3 +85,13 @@ document.getElementById('leave-room').addEventListener('click', () => {
         window.location = "/logout";
     }
 });
+
+
+// fetch("/allusers")
+//     .then(user => user.json())
+//     .then(data =>
+//         data.forEach(user => {
+//             document.getElementById("all-users").innerHTML += "<h1>" + user.alias + "</h1>"
+//             console.log(user.username);
+//         })
+//     )

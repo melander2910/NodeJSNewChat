@@ -1,0 +1,1 @@
+const database = require("exam2.js").database

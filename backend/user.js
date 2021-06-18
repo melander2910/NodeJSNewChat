@@ -1,12 +1,18 @@
-const session = require("express-session");
-
-
 const bcrypt = require("bcrypt");
 
-// 10 hashes pr second
+// The salt to be used in encryption. If specified as a number then a salt will be generated with the specified number of rounds and used.
+// unique value that can be added to the end of the password to create a different hash value. This adds a layer of security to the hashing process, specifically against brute force attacks.
 const saltRounds = 10;
 
 const login = (app, connection) => {
+    // app.get("/allusers",(req, res, next) => {
+    //     // Select from mysql database and give rows as json result
+    //     connection.query("SELECT username, alias FROM userLogin", (err, rows, fields) => {
+    //         console.log("Succesfully fetched all users");
+    //         res.json(rows);
+    //     })
+    // })
+
     // creating a user
     app.post("/signup", (req, res) => {
         const data = req.body

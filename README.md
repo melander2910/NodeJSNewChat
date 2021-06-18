@@ -4,7 +4,7 @@
 
 # Required installations 
 npm install express
-npm install
+npm install (will install all the dependencies)
 npm install socket.io
 npm install dotenv
 npm install fs

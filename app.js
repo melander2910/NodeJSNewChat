@@ -25,10 +25,10 @@ app.use(express.urlencoded({
 const session = require("express-session")
 
 // in order for the app to use sessions
-app.use(session({
-    secret: "secret session cookie is signed with this secret to prevent tampering", // Data tampering is the act of deliberately modifying (destroying, manipulating, or editing) data through unauthorized channels
+app.use(session({               // "secret session cookie is signed to prevent tampering"
+    secret: process.env.SECRET, // Data tampering is the act of deliberately modifying (destroying, manipulating, or editing) data through unauthorized channels
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false 
 }))
 
 // import mysql
@@ -209,7 +209,7 @@ app.get("/logout", (req, res) => {
 })
 
 // setting port to .env port if it exist, else 3000
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || 3000;
 
 // listen on a port in order for the app to run
 server.listen(PORT, (error) => {
